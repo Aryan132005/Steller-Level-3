@@ -105,8 +105,8 @@ export const SendPayment: React.FC<SendPaymentProps> = ({
 
       // 3. Sign transaction via Freighter
       const { signedTxXdr, error: signingError } = await signTransaction(xdr, {
-        networkPassphrase: "Test SDN Network ; September 2015",
-      });
+        network: "TESTNET",
+      } as any);
 
       if (signingError) {
         throw new Error(
