@@ -70,7 +70,10 @@ export function useWallet() {
         throw new Error(typeof error === "string" ? error : JSON.stringify(error));
       }
       
-      const isTestnet = network === "TESTNET" || networkPassphrase === "Test SDN Network ; September 2015";
+      const isTestnet =
+        network === "TESTNET" ||
+        networkPassphrase === "Test SDN Network ; September 2015" ||
+        networkPassphrase === "Test SDF Network ; September 2015";
       
       setState((s) => ({
         ...s,

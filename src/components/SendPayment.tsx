@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Send, AlertCircle, Sparkles } from "lucide-react";
 import { StrKey } from "@stellar/stellar-sdk";
 import { signTransaction } from "@stellar/freighter-api";
-import { buildPaymentTx, submitTransaction } from "../lib/stellar";
+import { buildPaymentTx, submitTransaction, NETWORK_PASSPHRASE } from "../lib/stellar";
 
 interface SendPaymentProps {
   senderAddress: string;
@@ -105,8 +105,8 @@ export const SendPayment: React.FC<SendPaymentProps> = ({
 
       // 3. Sign transaction via Freighter
       const { signedTxXdr, error: signingError } = await signTransaction(xdr, {
-        network: "TESTNET",
-      } as any);
+        networkPassphrase: NETWORK_PASSPHRASE,
+      });
 
       if (signingError) {
         throw new Error(
