@@ -78,7 +78,7 @@ Below are placeholders for visual walkthroughs of the dApp.
 ![alt text](image-1.png)
 
 ### Mobile View
-![alt text](Mobile_responsive_UI.png)
+![alt text](image-3.png)
 
 ### Balance Displayed
 *Placeholder for the XLM Balance card showing the active account balance with a refresh button, or the warning card prompting to fund with Friendbot.*
