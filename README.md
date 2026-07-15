@@ -2,6 +2,7 @@
 
 A sleek, responsive, and secure decentralized application (dApp) built on the Stellar Testnet. This application allows users to connect their Freighter wallet, check their XLM balance, automatically or manually fund their accounts using Stellar's Friendbot, and transfer XLM securely to any destination address on the testnet ledger.
 
+🔗 **[Live Deployment Link](https://steller-level-3.vercel.app/)**  
 🎥 **[Watch the Video Demo](https://drive.google.com/file/d/1KDLAQadsH0xVNYP8rf4wTu3SJYwCDHPn/view?usp=sharing)**
 
 ---
