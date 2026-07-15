@@ -1,14 +1,27 @@
-# Simple Payment dApp (Stellar Testnet)
+# Soroban Smart Contract Payment dApp (Stellar Testnet)
 
-A sleek, responsive, and secure decentralized application (dApp) built on the Stellar Testnet. This application allows users to connect their Freighter wallet, check their XLM balance, automatically or manually fund their accounts using Stellar's Friendbot, and transfer XLM securely to any destination address on the testnet ledger.
+A sleek, responsive, and secure decentralized application (dApp) built on the Stellar Testnet. This application allows users to connect their Freighter wallet, check their XLM balance, automatically or manually fund their accounts using Stellar's Friendbot, and transfer XLM securely via a custom **Soroban Smart Contract** deployed on the testnet ledger.
 
 🔗 **[Live Deployment Link](https://steller-level-3.vercel.app/)**  
 🎥 **[Watch the Video Demo](https://drive.google.com/file/d/1KDLAQadsH0xVNYP8rf4wTu3SJYwCDHPn/view?usp=sharing)**
 
 ---
 
+## 📜 Soroban Smart Contract Details
+
+- **Contract ID**: `CA6G6PWT4CRBWSJFC5GNDFUPRMPHMKCFLOAPCC7JMB42ZY3YCMEMNLAK`
+- **Native XLM Token SAC ID**: `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC`
+- **Contract Functions**:
+  - `transfer(token_address: Address, from: Address, to: Address, amount: i128)`: Verifies sender's signature, executes native token transfer, increments transaction count, and tracks total volume.
+  - `get_payment_count() -> u32`: Returns total number of payment transactions processed by the contract.
+  - `get_total_volume() -> i128`: Returns total volume of XLM transferred via the contract (in stroops).
+
+---
+
 ## 🌟 Features
 
+- **Soroban Contract Payments**: Transfers XLM by invoking a custom smart contract on the ledger instead of a direct Horizon payment transaction. Includes authorization checks and transaction tracking.
+- **On-chain Contract Statistics**: Queries and displays live contract state metrics (total payment count and total volume) directly in the user interface.
 - **Wallet Connection Flow**: Seamless integration with the Freighter browser wallet. Shows active connection status, truncated public key, and includes manual network verification.
 - **Wrong Network Alerts**: Automatically detects if the connected Freighter wallet is configured for a network other than the Stellar Testnet, displaying a clear alert to guide the user.
 - **Account Balance Handling**: Retrieves real-time XLM balance via the Stellar Horizon Testnet API. Includes manual refresh and auto-refresh after successful transactions.
@@ -22,9 +35,10 @@ A sleek, responsive, and secure decentralized application (dApp) built on the St
 ## 🛠️ Tech Stack
 
 - **Frontend Core**: React 19 + TypeScript + Vite 8
+- **Smart Contract**: Rust + Soroban SDK 26
 - **Stellar Libraries**:
-  - `@stellar/stellar-sdk` (v16) for Horizon Server queries and transaction construction.
-  - `@stellar/freighter-api` (v3) for wallet connectivity and secure transaction signing.
+  - `@stellar/stellar-sdk` (v16) for Horizon/Soroban RPC queries, transaction construction, simulation, and assembly.
+  - `@stellar/freighter-api` (v6) for wallet connectivity and secure transaction signing.
 - **Styling**: Vanilla CSS (Custom Glassmorphism and animations)
 - **Icons**: `lucide-react`
 
@@ -47,7 +61,14 @@ By default, Freighter might be connected to the Stellar Public network. To use t
 3. Select **Network**.
 4. Choose **Testnet** (or click **Add Network** and configure with Passphrase `Test SDN Network ; September 2015` and URL `https://horizon-testnet.stellar.org` if needed).
 
-### 3. Clone and Install Dependencies
+### 3. Build and Test the Soroban Contract
+Before running the frontend, you can compile and verify the Soroban smart contract using:
+```bash
+cargo test
+stellar contract build
+```
+
+### 4. Clone and Install Dependencies
 Navigate to the project root directory and run the following command to download dependencies:
 ```bash
 npm install

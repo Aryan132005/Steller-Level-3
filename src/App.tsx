@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWallet } from "./hooks/useWallet";
 import WalletConnect from "./components/WalletConnect";
 import BalanceDisplay from "./components/BalanceDisplay";
 import SendPayment from "./components/SendPayment";
 import TransactionStatus from "./components/TransactionStatus";
 import { Sparkles, Terminal, ShieldAlert } from "lucide-react";
+import { getPaymentCount, getTotalVolume, CONTRACT_ID } from "./lib/stellar";
 
 export function App() {
   const wallet = useWallet();
@@ -12,6 +13,28 @@ export function App() {
   const [txState, setTxState] = useState<"idle" | "sending" | "success" | "failure">("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [contractCount, setContractCount] = useState<number>(0);
+  const [contractVolume, setContractVolume] = useState<string>("0.0000000");
+
+  const fetchContractStats = async () => {
+    try {
+      const count = await getPaymentCount();
+      const volume = await getTotalVolume();
+      setContractCount(count);
+      setContractVolume(volume);
+    } catch (e) {
+      console.error("Failed to fetch contract stats:", e);
+    }
+  };
+
+  // Fetch stats on load and when wallet changes
+  useEffect(() => {
+    fetchContractStats();
+    // Poll stats every 10 seconds
+    const interval = setInterval(fetchContractStats, 10000);
+    return () => clearInterval(interval);
+  }, [wallet.address]);
 
   const handleTxStart = () => {
     setTxState("sending");
@@ -22,6 +45,7 @@ export function App() {
   const handleTxSuccess = (hash: string) => {
     setTxState("success");
     setTxHash(hash);
+    fetchContractStats(); // Refresh stats on success
   };
 
   const handleTxFailure = (msg: string) => {
@@ -33,6 +57,11 @@ export function App() {
     setTxState("idle");
     setTxHash(null);
     setErrorMsg(null);
+  };
+
+  const handleRefreshAll = async () => {
+    wallet.refreshBalance();
+    await fetchContractStats();
   };
 
   return (
@@ -78,10 +107,41 @@ export function App() {
                 balance={wallet.balance}
                 isUnfunded={wallet.isUnfunded}
                 isFunding={wallet.isFunding}
-                refreshBalance={wallet.refreshBalance}
+                refreshBalance={handleRefreshAll}
                 fundWithFriendbot={wallet.fundWithFriendbot}
                 isTestnet={wallet.isTestnet}
               />
+            )}
+
+            {wallet.address && (
+              <div className="card glass-card">
+                <div className="card-header">
+                  <div className="header-title-container">
+                    <Terminal className="accent-icon text-primary" size={20} />
+                    <h2>Contract Ledger Stats</h2>
+                  </div>
+                </div>
+                <div className="card-body">
+                  <div className="stats-container flex flex-col gap-4">
+                    <div className="stat-row flex justify-between items-center py-2 border-b border-muted">
+                      <span className="text-secondary text-sm">Contract ID:</span>
+                      <span className="monospace text-xs text-right cursor-pointer hover-underline text-primary" 
+                            onClick={() => window.open(`https://stellar.expert/explorer/testnet/contract/${CONTRACT_ID}`, "_blank")}
+                            title="Click to view on Explorer">
+                        {CONTRACT_ID.substring(0, 6)}...{CONTRACT_ID.substring(CONTRACT_ID.length - 6)}
+                      </span>
+                    </div>
+                    <div className="stat-row flex justify-between items-center py-2 border-b border-muted">
+                      <span className="text-secondary text-sm">Total Payments:</span>
+                      <span className="font-bold text-lg">{contractCount}</span>
+                    </div>
+                    <div className="stat-row flex justify-between items-center py-2">
+                      <span className="text-secondary text-sm">Total Volume:</span>
+                      <span className="font-bold text-lg text-accent">{contractVolume} XLM</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
@@ -95,7 +155,7 @@ export function App() {
                 onTxStart={handleTxStart}
                 onTxSuccess={handleTxSuccess}
                 onTxFailure={handleTxFailure}
-                refreshBalance={wallet.refreshBalance}
+                refreshBalance={handleRefreshAll}
               />
             ) : (
               <div className="card glass-card info-prompt-card text-center py-12 px-6">

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Send, AlertCircle, Sparkles } from "lucide-react";
 import { StrKey } from "@stellar/stellar-sdk";
 import { signTransaction } from "@stellar/freighter-api";
-import { buildPaymentTx, submitTransaction, NETWORK_PASSPHRASE } from "../lib/stellar";
+import { invokeContractPayment } from "../lib/stellar";
 
 interface SendPaymentProps {
   senderAddress: string;
@@ -90,51 +90,23 @@ export const SendPayment: React.FC<SendPaymentProps> = ({
     try {
       const recipientAddress = recipient.trim();
       const amountString = parseFloat(amount).toString();
-      const memoString = memo.trim();
 
-      // 1. Build payment transaction
-      const transaction = await buildPaymentTx(
+      // 1. Invoke the contract payment transfer
+      const txHash = await invokeContractPayment(
         senderAddress,
         recipientAddress,
         amountString,
-        memoString || undefined
+        signTransaction
       );
 
-      // 2. Get Transaction XDR
-      const xdr = transaction.toXDR();
-
-      // 3. Sign transaction via Freighter
-      const { signedTxXdr, error: signingError } = await signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASE,
-      });
-
-      if (signingError) {
-        throw new Error(
-          typeof signingError === "string"
-            ? signingError
-            : (signingError as any).message || "Transaction signing rejected by user."
-        );
-      }
-
-      if (!signedTxXdr) {
-        throw new Error("No signed transaction XDR returned from Freighter.");
-      }
-
-      // 4. Submit signed XDR to Horizon
-      const response = await submitTransaction(signedTxXdr);
-
-      if (response && response.hash) {
-        onTxSuccess(response.hash);
-        // Clear fields on success
-        setRecipient("");
-        setAmount("");
-        setMemo("");
-        setErrors({});
-        // Re-fetch balance
-        refreshBalance();
-      } else {
-        throw new Error("Failed to retrieve transaction hash from network submission.");
-      }
+      onTxSuccess(txHash);
+      // Clear fields on success
+      setRecipient("");
+      setAmount("");
+      setMemo("");
+      setErrors({});
+      // Re-fetch balance
+      refreshBalance();
     } catch (err: any) {
       console.error("Payment flow failure:", err);
       
