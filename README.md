@@ -72,8 +72,11 @@ Stellar accounts must be initialized with a minimum balance of 1 XLM before they
 
 Below are placeholders for visual walkthroughs of the dApp.
 
-### Wallet Connected State
-*Placeholder for the wallet connection card showing the truncated public key, active green network badge, and disconnect button.*
+### Wallet Connect
+![alt text](image-1.png)
+
+### Mobile View
+![alt text](Mobile_responsive_UI.png)
 
 ### Balance Displayed
 *Placeholder for the XLM Balance card showing the active account balance with a refresh button, or the warning card prompting to fund with Friendbot.*
@@ -82,4 +85,9 @@ Below are placeholders for visual walkthroughs of the dApp.
 *Placeholder showing the completed transaction loader, transition to Freighter prompt, and successful sign feedback.*
 
 ### Transaction Result Shown to User
+![alt text](Test_output.png)
 *Placeholder of the success modal containing the transaction hash, clipboard copy action, and direct link to the Stellar.expert explorer.*
+
+### CI/CD Pipeline Workflow
+![alt text](image.png)
+*Placeholder for the CI/CD pipeline status indicator showing the current build status (success or failure).*
